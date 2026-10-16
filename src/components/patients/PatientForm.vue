@@ -53,21 +53,51 @@
       />
 
       <BaseSelect
-          label="Tipo de consulta"
-          v-model="form.type"
-          :options="typeOptions"
-          :error="form.errors.type"
-          @blur="form.validate('type')"
-          required
+        label="Tipo de consulta"
+        v-model="form.type"
+        :options="typeOptions"
+        :error="form.errors.type"
+        @blur="form.validate('type')"
+        required
       />
 
       <BaseSelect
-          label="Tempo de consulta"
-          v-model="form.time"
-          :options="timeOptions"
-          :error="form.errors.time"
-          @blur="form.validate('time')"
-          required
+        label="Dia da consulta"
+        v-model="form.day"
+        :options="dayOptions"
+        :error="form.errors.day"
+        @blur="form.validate('day')"
+        required
+      />
+
+      <BaseSelect
+        label="Tempo de consulta"
+        v-model="form.time"
+        :options="timeOptions"
+        :error="form.errors.time"
+        @blur="form.validate('time')"
+        required
+      />
+
+      <BaseInput
+        label="Valor"
+        v-model="form.value"
+        placeholder="Valor"
+        :error="form.errors.value"
+        :mask="maskMoney"
+        @blur="form.validate('value')"
+      />
+
+      <BaseCheckbox
+          v-model="form.create_appointments"
+          label="Criar consultas automaticamente"
+          :error="form.errors.create_appointments"
+      />
+
+      <BaseCheckbox
+          v-model="form.notify_appointment"
+          label="Notificar pacientes sobre consultas"
+          :error="form.errors.notify_appointment"
       />
 
       <label class="form-row">
@@ -95,9 +125,11 @@ import BaseInput from '../forms/BaseInput.vue'
 import BaseSelect from '../forms/BaseSelect.vue'
 import { useForm } from 'laravel-precognition-vue'
 import { maskCPF, maskCellphone, unmask } from '../../utils/masks.js'
+import {maskMoney, unmaskMoney} from '../../utils/masks.js'
 import { watch } from 'vue'
 import BaseCheckbox from "../forms/BaseCheckbox.vue";
 import {loadTimes, loadTypes} from "../../utils/select.js";
+import {genderOptions, dayOptions} from "../../utils/select.js";
 
 export default {
   components: {BaseCheckbox, BaseInput, BaseSelect },
@@ -116,9 +148,13 @@ export default {
       gender: '',
       email: '',
       active: true,
+      create_appointments: true,
+      notify_appointment: false,
       notes: '',
       type: '',
       time: '',
+      value: 0,
+      day: '',
     })
 
     const typeOptions = loadTypes();
@@ -131,12 +167,16 @@ export default {
       form.last_name = data.last_name || ''
       form.email = data.email || ''
       form.active = data.active || false
+      form.create_appointments = data.create_appointments || false
+      form.notify_appointment = data.notify_appointment || false
       form.document = maskCPF(data.document || '')
       form.phone = maskCellphone(data.phone || '')
+      form.value = parseFloat(data.value).toFixed(2).replace('.', ',') || 0
       form.gender = data.gender || ''
       form.notes = data.notes || ''
       form.type = data.type || ''
       form.time = data.time || ''
+      form.day = data.day !== undefined ? data.day : 0
     }
 
     watch(() => props.modelValue, (val) => populateForm(val), { immediate: true })
@@ -144,25 +184,18 @@ export default {
     const submit = () => {
       const originalDocument = form.document
       const originalPhone = form.phone
+      const originalValue = form.value
 
+      form.value = unmaskMoney(form.value)
       form.document = unmask(form.document)
       form.phone = unmask(form.phone)
 
       form.submit({
         onSuccess: () => {
-          emit('save', {
-            name: form.name,
-            document: form.document,
-            phone: form.phone,
-            gender: form.gender,
-            email: form.email,
-            active: form.active,
-            notes: form.notes,
-            type: form.type,
-            time: form.time,
-          })
+          emit('save')
         },
         onError: (errors) => {
+          form.value = originalValue
           form.document = originalDocument
           form.phone = originalPhone
           console.error('Validation errors:', errors)
@@ -170,21 +203,18 @@ export default {
       }).catch((err) => {
         form.document = originalDocument
         form.phone = originalPhone
+        form.value = originalValue
       })
     }
-
-    const genderOptions = [
-      { value: '', label: 'Selecione' },
-      { value: 'female', label: 'Feminino' },
-      { value: 'male', label: 'Masculino' },
-    ]
 
     return {
       form,
       genderOptions,
+      dayOptions,
       submit,
       maskCPF,
       maskCellphone,
+      maskMoney,
       typeOptions,
       timeOptions
     }

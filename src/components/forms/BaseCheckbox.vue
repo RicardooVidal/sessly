@@ -1,5 +1,8 @@
 <template>
-  <label class="checkbox-row" :class="{ 'has-error': error }">
+  <label class="field-width checkbox-row" :class="{ 'has-error': error }"
+    :data-field-width="width != null ? '' : null"
+    :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
+  >
     <input
       type="checkbox"
       :checked="modelValue"
@@ -17,6 +20,7 @@
 export default {
   name: 'BaseCheckbox',
   props: {
+    width: { type: [String, Number], default: null },
     label: { type: String, default: '' },
     modelValue: { type: Boolean, default: false },
     required: { type: Boolean, default: false },

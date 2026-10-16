@@ -1,5 +1,8 @@
 <template>
-  <div class="select-search" @click.stop>
+  <div class="field-width select-search" @click.stop
+    :data-field-width="width != null ? '' : null"
+    :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
+  >
     <div v-if="multiple" class="tags">
       <span v-for="(t,i) in internalValue" :key="i" class="tag">{{ findLabel(t) }} <button type="button" @click="remove(i)">×</button></span>
     </div>
@@ -39,6 +42,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 
 export default {
   props: {
+    width: { type: [String, Number], default: null },
     label: { type: String, default: '' },
     options: { type: Array, default: () => [] },
     modelValue: { type: [String, Array], default: '' },

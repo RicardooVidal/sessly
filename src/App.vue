@@ -3,13 +3,13 @@
     <div class="mobile-topbar" v-if="isMobile">
       <button @click="toggleSidebar">☰</button>
       <span class="brand-div">
-        <div class="brand">Mindease</div>
+        <div class="brand">PsicoDesk</div>
       </span>
     </div>
 
     <aside :class="['sidebar', { open: sidebarOpen }]" v-if="checkHasTenant">
       <span class="brand-div">
-        <h1 class="brand">Mindease</h1>
+        <h1 class="brand">PsicoDesk</h1>
       </span>
       <nav>
         <ul>

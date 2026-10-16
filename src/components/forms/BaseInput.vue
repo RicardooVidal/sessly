@@ -1,5 +1,8 @@
 <template>
-  <label class="form-row">
+  <label class="field-width form-row"
+    :data-field-width="width != null ? '' : null"
+    :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
+  >
     <span class="label-text">{{ label }} <small v-if="required">*</small></span>
     <input
       v-if="type === 'file'"
@@ -30,6 +33,7 @@
 export default {
   name: 'BaseInput',
   props: {
+    width: { type: [String, Number], default: null },
     label: { type: String, default: '' },
     modelValue: { type: [String, Number, File], default: '' },
     placeholder: { type: String, default: '' },

@@ -82,6 +82,7 @@
   .card { padding: 14px; }
   .base-input, .form-row input, .form-row select, .form-row textarea { font-size: 16px; min-width: 0; }
   .grid-examples { grid-template-columns: minmax(0, 1fr); }
+  .date-picker .dp--input { font-size: 16px !important; }
 }
 
 /* Desktop fields follow the expected content length; mobile keeps full width. */
@@ -111,4 +112,21 @@
   .compact-form > #btn-document { flex: 0 0 100%; min-width: 0; }
   .compact-form > .form-row:has(textarea) { max-width: none; }
   .compact-form > .form-row textarea { max-width: 640px; }
+}
+
+/* Explicit component widths override automatic desktop field sizing. */
+:is(.form-row, .select-search, .checkbox-row).field-width[data-field-width] {
+  min-width: 0;
+  max-width: 100%;
+}
+@media (min-width: 769px) {
+  :is(.form-row, .select-search, .checkbox-row).field-width[data-field-width] {
+    width: var(--form-field-width);
+    flex: 0 1 auto;
+  }
+}
+@media (max-width: 768px) {
+  :is(.form-row, .select-search, .checkbox-row).field-width[data-field-width] {
+    width: 100%;
+  }
 }

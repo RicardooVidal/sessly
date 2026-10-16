@@ -9,14 +9,23 @@
           :error="form.errors.patient"
           required
       />
-
-      <BaseInput
-          label="Data"
-          v-model="form.date"
-          type="datetime-local"
-          required
-          :error="form.errors.date"
-          @blur="form.validate('date')"
+      <BaseSelect
+        label="Dia da consulta"
+        v-model="form.day"
+        :options="dayOptions"
+        :error="form.errors.day"
+        @blur="form.validate('day')"
+        required
+      />
+      <DatePicker
+        id="appointment-date"
+        label="Data"
+        v-model="form.date"
+        :disabled-dates="isDateDisabled"
+        :error="form.errors.date"
+        :hint="dateHint"
+        required
+        @update:model-value="form.validate('date')"
       />
       <BaseInput
         label="Valor"
@@ -68,15 +77,18 @@
 import BaseInput from '../forms/BaseInput.vue'
 import BaseSelect from '../forms/BaseSelect.vue'
 import { useForm } from 'laravel-precognition-vue'
-import {maskMoney, unmask, unmaskMoney} from '../../utils/masks.js'
+import {maskMoney, unmaskMoney} from '../../utils/masks.js'
 import {computed, ref, watch} from 'vue'
+import DatePicker from '../forms/DatePicker.vue'
 import BaseCheckbox from "../forms/BaseCheckbox.vue";
 import SelectSearch from "../SelectSearch.vue";
 import MedicalRecordForm from './MedicalRecordForm.vue'
 import { api } from '../../composables/useApi.js'
+import {genderOptions, dayOptions} from "../../utils/select.js";
+import { notify } from '../../composables/useToastr.js'
 
 export default {
-  components: {SelectSearch, BaseCheckbox, BaseInput, BaseSelect, MedicalRecordForm },
+  components: {DatePicker, SelectSearch, BaseCheckbox, BaseInput, BaseSelect, MedicalRecordForm },
   props: {
     patients: { type: Array, default: () => [] },
     modelValue: { type: Object, default: null },
@@ -85,21 +97,49 @@ export default {
   },
   emits: ['save', 'cancel'],
   setup(props, { emit }) {
+    const loadPatientOptions = ref(true);
+
     const form = useForm(props.method, props.url, {
       uuid: '',
       patient: {uuid: ''},
       date: '',
+      day: '',
       value: 0,
-      presence: '',
+      presence: 'pending',
       notes: '',
       medical_record: '',
+    })
+
+    const selectedWeekday = computed(() => {
+      if (form.day === '' || form.day == null) return null
+      const day = Number(form.day)
+      return Number.isInteger(day) && day >= 0 && day <= 6 ? (day + 1) % 7 : null
+    })
+
+    const isDateDisabled = (date) => selectedWeekday.value !== null
+      && date.getDay() !== selectedWeekday.value
+
+    const dateHint = computed(() => {
+      const option = dayOptions.find(option => option.value !== '' && Number(option.value) === Number(form.day))
+      return selectedWeekday.value === null
+        ? 'Selecione o dia da consulta para filtrar as datas.'
+        : `Datas disponíveis: ${option?.label.toLowerCase()}.`
+    })
+
+    watch(() => form.day, () => {
+      if (form.date && isDateDisabled(new Date(form.date))) {
+        form.date = ''
+      }
     })
 
     const loadingMedicalRecord = ref(false)
     const importingMedicalRecord = ref(false)
 
-    const populateForm = (data) => {
-      if (!data) return
+    const populateForm = async (data) => {
+      if (!data) {
+        return
+      }
+      loadPatientOptions.value = false;
       const date = data.date ? new Date(data.date) : null
       const pad = (value) => String(value).padStart(2, '0')
 
@@ -108,9 +148,10 @@ export default {
       form.date = date && !Number.isNaN(date.getTime())
         ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
         : ''
-      form.value = data.value || 0
+      form.value = parseFloat(data.value).toFixed(2).replace('.', ',') || 0
       form.presence = data.presence || ''
       form.notes = data.notes || ''
+      form.day = data.day || ''
 
       loadMedicalRecord();
     }
@@ -138,7 +179,31 @@ export default {
       }
     }
 
-    watch(() => props.modelValue, (val) => populateForm(val), { immediate: true })
+    const loadPatientOptionsForAppointment = () => {
+      if (!form.patient.uuid || !loadPatientOptions.value) {
+        return
+      }
+
+      const selectedPatient = props.patients.find(p => p.uuid === form.patient.uuid)
+      if (!selectedPatient) {
+        notify('Paciente não encontrado', 'error')
+        return
+      }
+
+      api.get(`/api/patient/options-appointments/get/${selectedPatient.uuid}`, { showLoading: false })
+        .then(response => {
+          const responseData = response.data.data || []
+          if (responseData.length === 0) {
+            return;  
+          }
+
+          form.value = maskMoney(responseData.value || 0)
+          form.day = responseData.day
+        })
+        .catch(error => {
+          notify('Não foi possível carregar os dados do paciente', 'error')
+        })
+    }
 
     const submit = () => {
       if (loadingMedicalRecord.value || importingMedicalRecord.value) return
@@ -151,7 +216,6 @@ export default {
       const encodedMedicalRecord = btoa(
         Array.from(bytes, byte => String.fromCharCode(byte)).join('')
       )
-      // form.phone = unmask(form.phone)
 
       form.submit({
         data: { medical_record: encodedMedicalRecord },
@@ -160,7 +224,6 @@ export default {
         },
         onError: (errors) => {
           form.value = originalValue
-          // form.phone = originalPhone
           console.error('Validation errors:', errors)
         }
       }).catch((err) => {
@@ -179,8 +242,19 @@ export default {
         (props.patients || []).map(p => ({ value: p.uuid, label: p.name }))
     )
 
+    watch(() => props.modelValue, (val) => populateForm(val), { immediate: true })
+
+    watch(() => form.patient.uuid, (newUuid) => {
+      if (newUuid) {
+        loadPatientOptionsForAppointment()
+      }
+    })
+
+
     return {
       form,
+      isDateDisabled,
+      dateHint,
       submit,
       loadMedicalRecord,
       loadingMedicalRecord,
@@ -188,6 +262,8 @@ export default {
       patientOptions,
       presenceOptions,
       maskMoney,
+      genderOptions,
+      dayOptions
     }
   },
 }

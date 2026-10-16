@@ -1,5 +1,8 @@
 <template>
-  <label class="form-row">
+  <label class="field-width form-row"
+    :data-field-width="width != null ? '' : null"
+    :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
+  >
     <span class="label-text">{{ label }} <small v-if="required">*</small></span>
     <select :value="modelValue" @change="$emit('update:modelValue', $event.target.value)" class="base-input" :class="{ 'has-error': error }">
       <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
@@ -13,6 +16,7 @@
 export default {
   name: 'BaseSelect',
   props: {
+    width: { type: [String, Number], default: null },
     label: { type: String, default: '' },
     modelValue: { type: [String, Number], default: '' },
     options: { type: Array, default: () => [] },
