@@ -131,13 +131,13 @@ export default {
 
 <style scoped>
 .select-search{position:relative}
-.dropdown{position:absolute;left:0;right:0;background:white;border:1px solid #e5e7eb;max-height:200px;overflow:auto;z-index:40;margin:4px 0;padding:0;list-style:none}
+.dropdown{position:absolute;left:0;right:0;background:var(--surface);border:1px solid var(--border);max-height:200px;overflow:auto;z-index:40;margin:4px 0;padding:0;list-style:none}
 .dropdown li{padding:8px;cursor:pointer}
-.dropdown li.highlighted{background:#efefef}
+.dropdown li.highlighted{background:var(--surface-hover)}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.tag{background:#f3f4f6;padding:4px 8px;border-radius:999px}
-.base-input{padding:8px;border:1px solid #e5e7eb;border-radius:6px}
-.base-input.has-error{border-color:#ef4444}
-.hint{color:#6b7280;font-size:12px}
-.error{color:#ef4444;font-size:12px}
+.tag{background:var(--surface-muted);padding:4px 8px;border-radius:999px}
+.base-input{padding:8px;border:1px solid var(--border);border-radius:6px}
+.base-input.has-error{border-color:var(--error)}
+.hint{color:var(--muted);font-size:12px}
+.error{color:var(--error);font-size:12px}
 </style>

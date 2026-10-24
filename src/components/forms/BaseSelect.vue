@@ -30,8 +30,8 @@ export default {
 <style scoped>
 .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .label-text{font-weight:600}
-.base-input{padding:8px;border:1px solid #e5e7eb;border-radius:6px}
-.base-input.has-error{border-color:#ef4444}
-.hint{color:#6b7280;font-size:12px}
-.error{color:#ef4444;font-size:12px}
+.base-input{padding:8px;border:1px solid var(--border);border-radius:6px}
+.base-input.has-error{border-color:var(--error)}
+.hint{color:var(--muted);font-size:12px}
+.error{color:var(--error);font-size:12px}
 </style>

@@ -19,7 +19,7 @@
       <hr />
 
       <h3>Server-side pagination (com prop pagination - Laravel)</h3>
-      <p style="font-size:12px;color:#666">Este exemplo simula a estrutura do Laravel ao passar a prop pagination</p>
+      <p style="font-size:12px;color:var(--muted)">Este exemplo simula a estrutura do Laravel ao passar a prop pagination</p>
       <SimpleTable
         :data="paginationData"
         :columns="columns"

@@ -171,23 +171,23 @@ export default {
 
 <style scoped>
 .mobile-sort { display: none; }
-.mobile-sort select, .mobile-sort button { min-height: 44px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: var(--text); font: inherit; min-width: 0; max-width: 100%; }
+.mobile-sort select, .mobile-sort button { min-height: 44px; padding: 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--text); font: inherit; min-width: 0; max-width: 100%; }
 .mobile-sort select { flex: 1; }
 .mobile-sort button { cursor: pointer; }
 
-.dt-wrapper { width: 100%; min-width: 0; padding: 16px; background: var(--surface); border: 1px solid #e5e7eb; border-radius: 12px; }
+.dt-wrapper { width: 100%; min-width: 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
 :deep(table.dataTable) { width: 100% !important; table-layout: fixed; border-collapse: collapse; margin: 16px 0 !important; }
 :deep(table.dataTable th), :deep(table.dataTable td) { white-space: normal; overflow-wrap: anywhere; padding: 12px 10px; vertical-align: middle; text-align: left; }
-:deep(table.dataTable th) { background: #f8fafc; font-size: 12px; color: #475569; }
-:deep(table.dataTable td) { font-size: 14px; border-bottom: 1px solid #edf0f4; }
-:deep(table.dataTable tbody tr:hover) { background: #f8fafc; }
+:deep(table.dataTable th) { background: var(--surface-muted); font-size: 12px; color: var(--muted); }
+:deep(table.dataTable td) { font-size: 14px; border-bottom: 1px solid var(--border); }
+:deep(table.dataTable tbody tr:hover) { background: var(--surface-muted); }
 :deep(.table-actions) { display: flex; flex-wrap: wrap; gap: 6px; }
-:deep(.table-action) { display: inline-flex; align-items: center; justify-content: center; min-height: 36px;border: 1px solid #cbd5e1; border-radius: 7px; background: #fff; color: var(--primary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; max-width: 100%; }
-:deep(.table-action:hover) { background: #eff6ff; }
-:deep(.table-action--danger) { color: #b91c1c; border-color: #fecaca; }
-:deep(.table-action--danger:hover) { background: #fef2f2; }
+:deep(.table-action) { display: inline-flex; align-items: center; justify-content: center; min-height: 36px;border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--primary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; max-width: 100%; }
+:deep(.table-action:hover) { background: var(--surface-hover); }
+:deep(.table-action--danger) { color: var(--danger); border-color: var(--danger-border); }
+:deep(.table-action--danger:hover) { background: var(--danger-bg); }
 :deep(button:focus-visible), :deep(input:focus-visible), :deep(select:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
-:deep(:is(.dataTables_filter, .dt-search) input), :deep(:is(.dataTables_length, .dt-length) select) { border: 1px solid #cbd5e1; border-radius: 7px; padding: 8px; max-width: 100%; background: #fff; }
+:deep(:is(.dataTables_filter, .dt-search) input), :deep(:is(.dataTables_length, .dt-length) select) { border: 1px solid var(--border); border-radius: 7px; padding: 8px; max-width: 100%; background: var(--surface); }
 :deep(:is(.dataTables_filter, .dt-search)), :deep(:is(.dataTables_length, .dt-length)), :deep(:is(.dataTables_info, .dt-info)), :deep(:is(.dataTables_paginate, .dt-paging)) { font-size: 13px; margin-bottom: 10px; }
 :deep(:is(.dataTables_paginate, .dt-paging)) { display: flex; flex-wrap: wrap; justify-content: flex-end; }
 :deep(:is(.dataTables_paginate, .dt-paging) span) { display: flex; flex-wrap: wrap; }
@@ -197,9 +197,9 @@ export default {
   .dt-wrapper { padding: 12px; }
   :deep(table.dataTable thead) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   :deep(table.dataTable), :deep(table.dataTable tbody) { display: block; width: 100%; }
-  :deep(table.dataTable tbody tr) { display: block; margin-bottom: 12px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: var(--surface); }
+  :deep(table.dataTable tbody tr) { display: block; margin-bottom: 12px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
   :deep(table.dataTable tbody td) { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 12px; padding: 10px 0; width: 100% !important; box-shadow: none !important; }
-  :deep(table.dataTable tbody td::before) { content: attr(data-label); font-size: 12px; font-weight: 600; color: #64748b; }
+  :deep(table.dataTable tbody td::before) { content: attr(data-label); font-size: 12px; font-weight: 600; color: var(--muted); }
   :deep(table.dataTable tbody td:last-child) { border-bottom: 0; }
   :deep(table.dataTable tbody td.dataTables_empty), :deep(table.dataTable tbody td.dt-empty) { display: block; text-align: center; }
   :deep(.table-action) { min-height: 44px; }

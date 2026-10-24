@@ -267,8 +267,8 @@ export default {
   gap: 8px;
   padding: 12px;
   margin-bottom: 10px;
-  color: #245880;
-  background: #eef6fc;
+  color: var(--primary);
+  background: var(--surface-muted);
   border-radius: 6px;
 }
 
@@ -279,8 +279,8 @@ export default {
 .medical-record-spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid #bfd8ec;
-  border-top-color: #245880;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: medical-record-spin 0.8s linear infinite;
 }
@@ -294,7 +294,7 @@ export default {
 }
 
 .editor-wrapper {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -306,8 +306,8 @@ export default {
   align-items: left;
   flex-wrap: wrap;
   padding: 8px;
-  border-bottom: 1px solid #ddd;
-  background: #f8f8f8;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
 }
 
 .toolbar button {
@@ -319,17 +319,17 @@ export default {
 }
 
 .toolbar button:hover {
-  background: #e9e9e9;
+  background: var(--surface-hover);
 }
 
 .toolbar button.active {
-  background: #ddd;
+  background: var(--border);
 }
 
 .toolbar select {
   margin: 5px;
   padding: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 4px;
 }
 
@@ -342,8 +342,8 @@ export default {
 #button-import-medical-record {
   display: inline-block;
   padding: 8px 16px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary);
+  color: var(--on-primary);
   border: none;
   border-radius: 10px;
   cursor: pointer;

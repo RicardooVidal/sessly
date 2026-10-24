@@ -81,6 +81,6 @@ export default {
   inset-inline-end: 36px;
 }
 .date-picker.has-error :deep(.dp--input) {
-  border-color: #ef4444;
+  border-color: var(--error);
 }
 </style>

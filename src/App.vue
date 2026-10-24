@@ -54,9 +54,10 @@
 
       <div class="sidebar-footer">
         <div class="theme-switcher">
-          <label>Tema:</label>
-          <select v-model="theme">
+          <label for="app-theme">Tema:</label>
+          <select id="app-theme" v-model="theme">
             <option value="default">Padrão</option>
+            <option value="dark">Escuro</option>
             <option value="pink">Rosa</option>
             <option value="red">Vermelho</option>
           </select>
@@ -112,9 +113,14 @@ export default {
     const closeSidebar = () => (sidebarOpen.value = false)
 
     // Theme handling
-    const theme = ref(localStorage.getItem('mindease:theme') || 'default')
+    const savedTheme = localStorage.getItem('mindease:theme')
+    const theme = ref(['default', 'pink', 'red', 'dark'].includes(savedTheme) ? savedTheme : 'default')
     const themeClass = computed(() => `theme-${theme.value}`)
-    watch(theme, (v) => localStorage.setItem('mindease:theme', v))
+    watch(theme, (value) => {
+      document.documentElement.classList.remove('theme-default', 'theme-pink', 'theme-red', 'theme-dark')
+      document.documentElement.classList.add(`theme-${value}`)
+      localStorage.setItem('mindease:theme', value)
+    }, { immediate: true })
 
     const onMainClick = () => {
       if (isMobile.value && sidebarOpen.value) closeSidebar()
@@ -194,7 +200,7 @@ export default {
 }
 
 .theme-switcher label {
-  color: #9ca3af;
+  color: var(--sidebar-muted);
   font-size: 13px;
 }
 
@@ -204,10 +210,15 @@ export default {
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.06);
-  color: #e5e7eb;
+  color: var(--sidebar-text);
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
+}
+
+.theme-switcher option {
+  background: var(--surface);
+  color: var(--text);
 }
 
 .btn-logout {

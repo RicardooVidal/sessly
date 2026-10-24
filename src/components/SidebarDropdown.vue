@@ -74,7 +74,7 @@ export default {
   background: transparent;
   border: none;
   border-radius: 8px;
-  color: #9ca3af;
+  color: var(--sidebar-muted);
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
@@ -124,7 +124,7 @@ export default {
   display: block;
   padding: 8px 12px 8px 42px;
   border-radius: 6px;
-  color: #9ca3af;
+  color: var(--sidebar-muted);
   text-decoration: none;
   font-size: 13px;
   transition: background 0.15s, color 0.15s;
@@ -132,11 +132,11 @@ export default {
 
 .dropdown-link:hover {
   background: rgba(255, 255, 255, 0.06);
-  color: #e5e7eb;
+  color: var(--sidebar-text);
 }
 
 .dropdown-link.active {
-  background: rgba(37, 99, 235, 0.2);
-  color: #60a5fa;
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
 }
 </style>

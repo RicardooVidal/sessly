@@ -52,17 +52,17 @@ export default {
 }
 
 .has-error .label-text {
-  color: #ef4444;
+  color: var(--error);
 }
 
 .hint {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 12px;
   margin-left: auto;
 }
 
 .error {
-  color: #ef4444;
+  color: var(--error);
   font-size: 12px;
   margin-left: auto;
 }
