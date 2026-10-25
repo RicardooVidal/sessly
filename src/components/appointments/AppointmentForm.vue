@@ -58,6 +58,7 @@
       <div class="form-section">
         <MedicalRecordForm
           v-model="form.medical_record"
+          :appointment-date="form.date"
           :loading="loadingMedicalRecord"
           @importing="importingMedicalRecord = $event"
         />

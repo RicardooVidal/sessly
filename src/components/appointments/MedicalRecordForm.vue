@@ -89,6 +89,42 @@
 
           <button
             type="button"
+            title="Alinhar à esquerda"
+            aria-label="Alinhar à esquerda"
+            :class="{ active: editor.isActive({ textAlign: 'left' }) }"
+            @click="editor.chain().focus().setTextAlign('left').run()"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M3 5h18M3 9h12M3 13h18M3 17h12" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            title="Centralizar"
+            aria-label="Centralizar"
+            :class="{ active: editor.isActive({ textAlign: 'center' }) }"
+            @click="editor.chain().focus().setTextAlign('center').run()"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M3 5h18M6 9h12M3 13h18M6 17h12" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            title="Alinhar à direita"
+            aria-label="Alinhar à direita"
+            :class="{ active: editor.isActive({ textAlign: 'right' }) }"
+            @click="editor.chain().focus().setTextAlign('right').run()"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M3 5h18M9 9h12M3 13h18M9 17h12" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
             @click="editor.chain().focus().undo().run()"
           >
             ↶
@@ -99,6 +135,15 @@
             @click="editor.chain().focus().redo().run()"
           >
             ↷
+          </button>
+
+          <button
+            type="button"
+            class="insert-date"
+            :disabled="busy"
+            @click="appendAppointmentDate"
+          >
+            Inserir data da consulta
           </button>
         </div>
 
@@ -117,7 +162,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
 import FontFamily from '@tiptap/extension-font-family'
+import TextAlign from '@tiptap/extension-text-align'
 import { api } from '../../composables/useApi'
+import { notify } from '../../composables/useToastr.js'
 
 export default {
   components: {
@@ -126,6 +173,10 @@ export default {
 
   props: {
     loading: { type: Boolean, default: false },
+    appointmentDate: {
+      type: String,
+      default: '',
+    },
     modelValue: {
       type: String,
       default: '',
@@ -199,6 +250,9 @@ export default {
         TextStyle,
         FontFamily,
         Indent,
+        TextAlign.configure({
+          types: ['heading', 'paragraph'],
+        }),
       ],
 
       content: this.modelValue,
@@ -235,6 +289,48 @@ export default {
         .chain()
         .focus()
         .setFontFamily(event.target.value)
+        .run()
+    },
+
+    appendAppointmentDate() {
+      if (this.busy || !this.editor) {
+        return
+      }
+
+      if (!this.appointmentDate) {
+        notify('Selecione a data da consulta antes de inseri-la no prontuário', 'info')
+        return
+      }
+
+      const date = new Date(this.appointmentDate)
+
+      if (Number.isNaN(date.getTime())) {
+        return
+      }
+
+      const formattedDate = new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }).format(date)
+
+      this.editor
+        .chain()
+        .insertContentAt(this.editor.state.doc.content.size, [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'text',
+                text: `Consulta em ${formattedDate}`,
+                marks: [{ type: 'bold' }],
+              },
+            ],
+          },
+          { type: 'horizontalRule' },
+          { type: 'paragraph' },
+        ])
+        .focus('end')
         .run()
     },
   },
@@ -324,6 +420,24 @@ export default {
 
 .toolbar button.active {
   background: var(--border);
+}
+
+.toolbar button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  vertical-align: middle;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar .insert-date {
+  margin-left: 8px;
+  border: 1px solid var(--border);
 }
 
 .toolbar select {
