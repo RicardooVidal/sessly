@@ -6,6 +6,7 @@ import './styles.css'
 
 import PatientIndex from './pages/patients/index.vue'
 import ContractIndex from './pages/contracts/index.vue'
+import FinanceIndex from './pages/finance/index.vue'
 import AppointmentIndex from './pages/appointments/index.vue'
 import AppointmentNewPage from "./pages/appointments/AppointmentNewPage.vue";
 import AppointmentEditPage from "./pages/appointments/AppointmentEditPage.vue";
@@ -30,6 +31,7 @@ const routes = [
   { path: '/contracts', component: ContractIndex },
   { path: '/contracts/new', component: ContractNewPage },
   { path: '/contracts/:id/edit', component: ContractEditPageDeprecated },
+  { path: '/finance', component: FinanceIndex },
   { path: '/patients', component: PatientIndex },
   { path: '/patients/new', component: PatientNewPage },
   { path: '/patients/:id/edit', component: PatientEditPage },
