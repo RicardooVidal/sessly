@@ -6,6 +6,7 @@ import './styles.css'
 
 import PatientIndex from './pages/patients/index.vue'
 import ContractIndex from './pages/contracts/index.vue'
+import DashboardIndex from './pages/dashboard/index.vue'
 import FinanceIndex from './pages/finance/index.vue'
 import AppointmentIndex from './pages/appointments/index.vue'
 import AppointmentNewPage from "./pages/appointments/AppointmentNewPage.vue";
@@ -25,12 +26,13 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 const routes = [
-  { path: '/', redirect: '/patients' },
+  { path: '/', redirect: '/dashboard' },
   { path: '/login', component: LoginPage },
   { path: '/companies', component: CompanyPage },
   { path: '/contracts', component: ContractIndex },
   { path: '/contracts/new', component: ContractNewPage },
   { path: '/contracts/:id/edit', component: ContractEditPageDeprecated },
+  { path: '/dashboard', component: DashboardIndex },
   { path: '/finance', component: FinanceIndex },
   { path: '/patients', component: PatientIndex },
   { path: '/patients/new', component: PatientNewPage },
