@@ -15,9 +15,11 @@ export const dayOptions = [
       { value: 6, label: 'Domingo' },
 ]
 
-export const loadPatients = async (api, patients) => {
+export const loadPatients = async (api, patients, params = {}) => {
     try {
-        const res = await api.get(`/api/patient/select/get?active=1`)
+        const res = await api.get('/api/patient/select/get', {
+            params: { active: 1, ...params },
+        })
         patients.value = res.data.data || []
     } catch (e) {
         console.error(e)

@@ -28,7 +28,7 @@ export default {
 
     const cancel = () => router.push('/appointments')
 
-    onMounted(() => loadPatients(api, patients))
+    onMounted(() => loadPatients(api, patients, { exclude_wait_list: 1 }))
 
     return { onSave, cancel, patients }
   },
