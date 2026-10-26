@@ -11,6 +11,7 @@ import FinanceIndex from './pages/finance/index.vue'
 import AppointmentIndex from './pages/appointments/index.vue'
 import AppointmentNewPage from "./pages/appointments/AppointmentNewPage.vue";
 import AppointmentEditPage from "./pages/appointments/AppointmentEditPage.vue";
+import WaitListPage from './pages/waitlist/index.vue'
 import PatientNewPage from './pages/patients/PatientNewPage.vue'
 import PatientDetailPage from './pages/patients/PatientDetailPage.vue'
 import AlfacePage from './pages/AlfacePage.vue'
@@ -36,6 +37,7 @@ const routes = [
   { path: '/finance', component: FinanceIndex },
   { path: '/patients', component: PatientIndex },
   { path: '/patients/new', component: PatientNewPage },
+  { path: '/wait-list', component: WaitListPage },
   { path: '/patients/:id/edit', component: PatientEditPage },
   { path: '/patients/:id', component: PatientDetailPage, props: true },
   { path: '/appointments', component: AppointmentIndex },
@@ -50,7 +52,7 @@ const router = createRouter({ history: createWebHistory(), routes })
 // Global auth guard: ensures routes (except /login) require authentication
 router.beforeEach(async (to, from, next) => {
     try {
-      authUser.value = await currentUser();
+      authUser.value = (await currentUser()).data;
       tenantUser.value =  await localStorage.getItem('mindease:tenant')
 
       if (!tenantUser.value || !authUser.value) {

@@ -10,6 +10,7 @@
     <aside :class="['sidebar', { open: sidebarOpen }]" v-if="checkHasTenant">
       <span class="brand-div">
         <h1 class="brand">PsicoDesk</h1>
+        <span>Beta</span>
       </span>
       <nav>
         <ul>
@@ -27,6 +28,7 @@
             :options="[
               { to: '/patients', label: 'Listar' },
               { to: '/patients/new', label: 'Novo' },
+              { to: '/wait-list', label: 'Lista de espera' },
             ]"
             @select="closeSidebar"
           />

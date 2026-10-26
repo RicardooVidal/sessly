@@ -2,7 +2,7 @@
   <div>
     <div class="page-hero">
       <div>
-        <h1>Dashboard</h1>
+        <h1>{{ greeting }}, {{ userName }} <span aria-hidden="true">👋</span></h1>
         <p class="page-subtitle">{{ currentDateLabel }}</p>
       </div>
       <button
@@ -94,13 +94,13 @@
           <span class="summary-card__hint">Próximos 30 dias</span>
         </article>
 
-        <article class="summary-card">
+        <router-link to="/wait-list" class="summary-card summary-card--link">
           <span class="summary-card__label">Lista de espera</span>
           <strong class="summary-card__value">
             {{ formatNumber(summary.wait_list.count) }}
           </strong>
           <span class="summary-card__hint">Pacientes aguardando vaga</span>
-        </article>
+        </router-link>
       </div>
 
       <section class="card agenda-card">
@@ -138,7 +138,7 @@
 
 <script>
 import { computed, onMounted, ref } from 'vue'
-import { api } from '../../composables/useApi.js'
+import { api, authUser } from '../../composables/useApi.js'
 
 const numberFormatter = new Intl.NumberFormat('pt-BR')
 const percentFormatter = new Intl.NumberFormat('pt-BR', {
@@ -165,11 +165,13 @@ export default {
   setup() {
     const summary = ref(null)
     const loading = ref(false)
+    const greetingReference = ref(new Date())
 
     let requestId = 0
 
     const load = async () => {
       const currentRequest = ++requestId
+      greetingReference.value = new Date()
       loading.value = true
 
       try {
@@ -191,6 +193,27 @@ export default {
       }
     }
 
+    const greeting = computed(() => {
+      const hour = greetingReference.value.getHours()
+
+      if (hour < 12) return 'Bom dia'
+      if (hour < 18) return 'Boa tarde'
+
+      return 'Boa noite'
+    })
+
+    const userName = computed(() => {
+      const name = typeof authUser.value?.name === 'string'
+        ? authUser.value.name.trim()
+        : ''
+
+      if (!name) return 'Usuário'
+
+      const firstName = name.split(/\s+/)[0]
+
+      return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase()
+    })
+
     const currentDateLabel = computed(() => {
       const generatedAt = summary.value?.generated_at
       const date = generatedAt ? new Date(generatedAt) : new Date()
@@ -207,6 +230,8 @@ export default {
     return {
       summary,
       loading,
+      greeting,
+      userName,
       currentDateLabel,
       load,
       formatNumber,
@@ -246,6 +271,22 @@ export default {
 .summary-card--primary {
   border-color: var(--primary);
   box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+}
+
+.summary-card--link {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.summary-card--link:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.summary-card--link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .summary-card__label {

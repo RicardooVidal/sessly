@@ -1,5 +1,5 @@
 <template>
-  <div class="field-width select-search" @click.stop
+  <div class="field-width select-search form-row" @click.stop
     :data-field-width="width != null ? '' : null"
     :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
   >
@@ -9,12 +9,21 @@
 
     <span class="label-text">{{ label }} <small v-if="required">*</small></span>
 
-    <label class="form-row">
+    <label>
       <input
+          v-if="disabled"
+          :value="multiple ? '' : findLabel(modelValue)"
+          :placeholder="placeholder"
+          class="base-input"
+          :class="{ 'has-error': error, 'is-disabled': disabled }"
+          disabled
+      />
+      <input
+          v-else
           ref="inputEl"
           :placeholder="placeholder"
           v-model="query"
-          @focus="open = true"
+          @focus="openDropdown"
           @keydown.enter.prevent="selectHighlighted"
           class="base-input"
           :class="{ 'has-error': error }"
@@ -23,7 +32,7 @@
       <small v-else-if="hint" class="hint">{{ hint }}</small>
     </label>
 
-    <ul v-if="open && filtered.length" class="dropdown">
+    <ul v-if="open && !disabled && filtered.length" class="dropdown">
       <li
         v-for="(o, idx) in filtered"
         :key="o.value"
@@ -48,7 +57,9 @@ export default {
     modelValue: { type: [String, Array], default: '' },
     multiple: { type: Boolean, default: false },
     error: { type: String, default: '' },
+    hint: { type: String, default: '' },
     placeholder: { type: String, default: '' },
+    disabled: { type: Boolean, default: false },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -90,7 +101,20 @@ export default {
       return (props.options.find(o => o.value == val) || {}).label || val;
     }
 
+    watch(() => props.options, () => {
+      if (!props.multiple && props.modelValue) query.value = findLabel(props.modelValue)
+    })
+
+    watch(() => props.disabled, (disabled) => {
+      if (disabled) open.value = false
+    })
+
+    const openDropdown = () => {
+      if (!props.disabled) open.value = true
+    }
+
     const select = (val) => {
+      if (props.disabled) return
       if (props.multiple) {
         const arr = Array.isArray(internalValue.value) ? [...internalValue.value] : []
         if (!arr.includes(val)) arr.push(val)
@@ -110,7 +134,7 @@ export default {
     }
 
     const remove = (idx) => {
-      if (!props.multiple) return
+      if (!props.multiple || props.disabled) return
       const arr = [...internalValue.value]
       arr.splice(idx, 1)
       internalValue.value = arr
@@ -118,18 +142,21 @@ export default {
     }
 
     const selectHighlighted = () => {
+      if (props.disabled) return
       const item = filtered.value[highlighted.value]
       if (item) select(item.value)
     }
 
     const inputEl = ref(null)
 
-    return { query, filtered, select, internalValue, remove, highlighted, open, selectHighlighted, findLabel, inputEl }
+    return { query, filtered, select, internalValue, remove, highlighted, open, openDropdown, selectHighlighted, findLabel, inputEl }
   },
 }
 </script>
 
 <style scoped>
+.label-text{font-weight:600}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .select-search{position:relative}
 .dropdown{position:absolute;left:0;right:0;background:var(--surface);border:1px solid var(--border);max-height:200px;overflow:auto;z-index:40;margin:4px 0;padding:0;list-style:none}
 .dropdown li{padding:8px;cursor:pointer}
@@ -138,6 +165,7 @@ export default {
 .tag{background:var(--surface-muted);padding:4px 8px;border-radius:999px}
 .base-input{padding:8px;border:1px solid var(--border);border-radius:6px}
 .base-input.has-error{border-color:var(--error)}
+.base-input.is-disabled{background:var(--surface-muted);color:var(--muted);cursor:not-allowed}
 .hint{color:var(--muted);font-size:12px}
 .error{color:var(--error);font-size:12px}
 </style>

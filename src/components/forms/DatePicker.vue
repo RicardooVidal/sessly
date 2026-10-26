@@ -68,7 +68,8 @@ export default {
   padding-inline-start: 12px;
   padding-inline-end: 76px;
   font-size: 13px;
-  padding: 4px !important;
+  padding: 6px !important;
+  background-color: transparent !important;
 }
 .date-picker :deep(.dp--input-not-clearable) {
   padding-inline-end: 40px !important;

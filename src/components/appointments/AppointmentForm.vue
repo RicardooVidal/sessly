@@ -7,6 +7,8 @@
           v-model="form.patient.uuid"
           placeholder="Pesquisar..."
           :error="form.errors.patient"
+          :disabled="isEditing"
+          :hint="isEditing ? 'Paciente não pode ser alterado após a criação.' : ''"
           required
       />
       <BaseSelect
@@ -99,13 +101,18 @@ export default {
   emits: ['save', 'cancel'],
   setup(props, { emit }) {
     const loadPatientOptions = ref(true);
+    const isEditing = computed(() => String(props.method).toLowerCase() === 'put')
+    const formatMoneyValue = (value) => {
+      const parsed = Number(value)
+      return maskMoney((Number.isFinite(parsed) ? parsed : 0).toFixed(2))
+    }
 
     const form = useForm(props.method, props.url, {
       uuid: '',
       patient: {uuid: ''},
       date: '',
       day: '',
-      value: 0,
+      value: formatMoneyValue(0),
       presence: 'pending',
       notes: '',
       medical_record: '',
@@ -149,7 +156,7 @@ export default {
       form.date = date && !Number.isNaN(date.getTime())
         ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
         : ''
-      form.value = parseFloat(data.value).toFixed(2).replace('.', ',') || 0
+      form.value = formatMoneyValue(data.value)
       form.presence = data.presence || ''
       form.notes = data.notes || ''
       form.day = data.day || ''
@@ -198,7 +205,7 @@ export default {
             return;  
           }
 
-          form.value = maskMoney(responseData.value || 0)
+          form.value = formatMoneyValue(responseData.value)
           form.day = responseData.day
         })
         .catch(error => {
@@ -239,9 +246,19 @@ export default {
       { value: 'absent', label: 'Ausente' },
     ]
 
-    const patientOptions = computed(() =>
-        (props.patients || []).map(p => ({ value: p.uuid, label: p.name }))
-    )
+    const patientOptions = computed(() => {
+      const options = (props.patients || []).map(p => ({ value: p.uuid, label: p.name }))
+      const currentPatient = props.modelValue?.patient
+
+      if (currentPatient?.uuid && !options.some(option => option.value === currentPatient.uuid)) {
+        options.unshift({
+          value: currentPatient.uuid,
+          label: currentPatient.name || currentPatient.uuid,
+        })
+      }
+
+      return options
+    })
 
     watch(() => props.modelValue, (val) => populateForm(val), { immediate: true })
 
@@ -254,6 +271,7 @@ export default {
 
     return {
       form,
+      isEditing,
       isDateDisabled,
       dateHint,
       submit,
