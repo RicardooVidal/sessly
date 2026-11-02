@@ -12,12 +12,16 @@
       </form>
 
       <div v-if="error" class="error">{{ error }}</div>
+
+      <div v-if="isRoot" class="admin-access">
+        <router-link to="/admin/companies" class="btn secondary">Gerenciar empresas</router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import { useRouter } from 'vue-router'
 import {api, initApi, setTenant, login, authUser, tenantUser} from '../composables/useApi'
 import {currentUser} from "../composables/useApi";
@@ -32,6 +36,7 @@ export default {
     const companies = ref('')
     const tenant = ref('')
     const error = ref('');
+    const isRoot = computed(() => Number(authUser.value?.id) === 1)
 
     // ensure api is initialized (base url + withCredentials)
     initApi()
@@ -59,9 +64,9 @@ export default {
 
         // Persist tenant for future sessions and set header globally
         try {
-          localStorage.setItem('mindease:tenant', tenant.value)
+          localStorage.setItem('sessly:tenant', tenant.value)
           const user = await currentUser();
-          authUser.value = user.data
+          authUser.value = user
           tenantUser.value = tenant.value
         } catch (e) {
           authUser.value = false
@@ -77,7 +82,7 @@ export default {
       }
     }
 
-    return { tenant, submit, error, companies }
+    return { tenant, submit, error, companies, isRoot }
   },
 }
 </script>
@@ -89,4 +94,6 @@ export default {
 .login-card label{display:block;margin-bottom:12px}
 .login-card input{width:100%;padding:8px;border:1px solid var(--border);border-radius:4px}
 .actions{display:flex;justify-content:flex-end}
+.admin-access{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center}
+.admin-access .btn{width:100%}
 </style>

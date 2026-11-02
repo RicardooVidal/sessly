@@ -27,7 +27,7 @@
 <script>
 import {onMounted, ref} from 'vue'
 import { useRouter } from 'vue-router'
-import { api, initApi, setTenant, login } from '../composables/useApi'
+import { api, initApi, setTenant, login, currentUser } from '../composables/useApi'
 import axios from "axios";
 
 export default {
@@ -47,7 +47,9 @@ export default {
       error.value = ''
       try {
         await login({ email: email.value, password: password.value })
-        await router.push('/companies')
+        const user = await currentUser()
+        const isRoot = Number(user?.id) === 1
+        await router.push(isRoot ? '/admin/companies' : '/companies')
       } catch (e) {
         // try to extract message
         error.value = (e && e.response && e.response.data && e.response.data.message) || 'Falha ao autenticar'

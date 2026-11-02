@@ -10,6 +10,7 @@
       :placeholder="placeholder"
       @change="handleFileChange"
       :required="required"
+      :disabled="disabled"
       class="base-input"
       :class="{ 'has-error': error }"
     />
@@ -20,6 +21,7 @@
       :value="modelValue"
       @input="handleInput"
       :required="required"
+      :disabled="disabled"
       :maxlength="mask?.maxlength ?? maxlength"
       class="base-input"
       :class="{ 'has-error': error }"
@@ -43,6 +45,7 @@ export default {
     error: { type: String, default: '' },
     mask: { type: Function, default: null },
     maxlength: { type: [Number, String], default: null },
+    disabled: { type: Boolean, default: false },
   },
   methods: {
     handleInput(event) {

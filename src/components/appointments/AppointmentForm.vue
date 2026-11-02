@@ -173,9 +173,10 @@ export default {
       loadingMedicalRecord.value = true
       try {
         const response = await api.get(`/api/medical-record/get-by-patient/${form.patient.uuid}`, { showLoading: false })
-        form.medical_record = response.data.content
+        const medicalRecord = response.data.data?.content
+        form.medical_record = medicalRecord
           ? new TextDecoder().decode(
-              Uint8Array.from(atob(response.data.content), char => char.charCodeAt(0))
+              Uint8Array.from(atob(medicalRecord), char => char.charCodeAt(0))
             )
           : ''
       } catch (error) {

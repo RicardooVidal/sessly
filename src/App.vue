@@ -3,17 +3,25 @@
     <div class="mobile-topbar" v-if="isMobile">
       <button @click="toggleSidebar">☰</button>
       <span class="brand-div">
-        <div class="brand">PsicoDesk</div>
+        <div class="brand">Sessly</div>
       </span>
     </div>
 
     <aside :class="['sidebar', { open: sidebarOpen }]" v-if="checkHasTenant">
       <span class="brand-div">
-        <h1 class="brand">PsicoDesk</h1>
+        <h1 class="brand">Sessly</h1>
         <span>Beta</span>
       </span>
       <nav>
         <ul>
+          <li v-if="isRoot" class="sidebar-link-item">
+            <router-link to="/admin/companies" class="sidebar-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01" />
+              </svg>
+              <span>Empresas</span>
+            </router-link>
+          </li>
           <li class="sidebar-link-item">
             <router-link to="/dashboard" class="sidebar-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -112,6 +120,7 @@ export default {
     const sidebarOpen = ref(false)
     const router = useRouter()
     const checkHasTenant = computed(() => hasTenant());
+    const isRoot = computed(() => Number(authUser.value?.id) === 1)
 
     const check = () => (isMobile.value = window.innerWidth <= 768)
     onMounted(() => {
@@ -123,13 +132,13 @@ export default {
     const closeSidebar = () => (sidebarOpen.value = false)
 
     // Theme handling
-    const savedTheme = localStorage.getItem('mindease:theme')
+    const savedTheme = localStorage.getItem('sessly:theme')
     const theme = ref(['default', 'pink', 'red', 'dark'].includes(savedTheme) ? savedTheme : 'default')
     const themeClass = computed(() => `theme-${theme.value}`)
     watch(theme, (value) => {
       document.documentElement.classList.remove('theme-default', 'theme-pink', 'theme-red', 'theme-dark')
       document.documentElement.classList.add(`theme-${value}`)
-      localStorage.setItem('mindease:theme', value)
+      localStorage.setItem('sessly:theme', value)
     }, { immediate: true })
 
     const onMainClick = () => {
@@ -168,7 +177,7 @@ export default {
       }
     }
 
-    return { authUser, isMobile, sidebarOpen, toggleSidebar, closeSidebar, theme, themeClass, onMainClick, errorMessage, handleLogout, checkHasTenant, isLoading }
+    return { authUser, isMobile, sidebarOpen, toggleSidebar, closeSidebar, theme, themeClass, onMainClick, errorMessage, handleLogout, checkHasTenant, isRoot, isLoading }
   },
 }
 </script>

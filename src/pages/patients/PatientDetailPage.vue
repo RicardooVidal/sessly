@@ -43,7 +43,7 @@ export default {
       loading.value = true
       try {
         const res = await api.get(`/api/patient/${props.id}`)
-        patient.value = res.data
+        patient.value = res.data.data
       } catch (e) {
         console.error(e)
       } finally {

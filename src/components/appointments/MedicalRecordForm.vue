@@ -217,7 +217,7 @@ export default {
           }
         )
 
-        emit('update:modelValue', response.data.content)
+        emit('update:modelValue', response.data.data.content)
       } catch (error) {
         console.error(error)
       } finally {

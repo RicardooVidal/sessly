@@ -23,7 +23,7 @@ export default {
         const response = await api.get('/api/google/connect');
 
         window.open(
-          response.data.url,
+          response.data.data.url,
           'google-oauth',
           'width=500,height=650'
         );

@@ -3,6 +3,27 @@ import { ref } from 'vue'
 import { startLoading } from './useLoading.js'
 import { notify } from './useToastr.js'
 
+const STORAGE_KEYS = ['token', 'tenant', 'theme']
+const STORAGE_PREFIX = 'sessly:'
+const LEGACY_STORAGE_PREFIX = 'mindease:'
+
+export function migrateLegacyStorage() {
+  try {
+    STORAGE_KEYS.forEach((key) => {
+      const legacyKey = `${LEGACY_STORAGE_PREFIX}${key}`
+      const currentKey = `${STORAGE_PREFIX}${key}`
+      const legacyValue = localStorage.getItem(legacyKey)
+      if (legacyValue === null) return
+      if (localStorage.getItem(currentKey) === null) {
+        localStorage.setItem(currentKey, legacyValue)
+      }
+      localStorage.removeItem(legacyKey)
+    })
+  } catch (e) {
+    // ignore if storage is unavailable
+  }
+}
+
 // Single axios instance used across the app
 export const api = axios.create()
 
@@ -32,22 +53,26 @@ api.interceptors.response.use(
 
     const path = new URL(config.url, 'http://localhost').pathname.replace(/\/$/, '')
     const method = config.method?.toLowerCase()
+    const segments = path.split('/')
+    const resourceKey = segments[2] === 'admin' ? segments[3] : segments[2]
     const resource = {
       patient: 'Paciente',
       appointment: 'Consulta',
       contract: 'Contrato',
-    }[path.split('/')[2]]
+      companies: 'Empresa',
+    }[resourceKey]
     let message
     if (path === '/api/medical-record/import') {
       message = 'Prontuário importado com sucesso!'
     } else if (resource && ['post', 'put', 'patch', 'delete'].includes(method)) {
+      const feminine = ['Consulta', 'Empresa'].includes(resource)
       const action = method === 'delete'
-        ? (resource === 'Consulta' ? 'excluída' : 'excluído')
-        : (resource === 'Consulta' ? 'salva' : 'salvo')
+        ? (feminine ? 'excluída' : 'excluído')
+        : (feminine ? 'salva' : 'salvo')
       message = `${resource} ${action} com sucesso!`
     } else if (method === 'post' && path === '/api/login') {
       return response
-    } else if (method === 'post' && path === '/logout') {
+    } else if (method === 'post' && path === '/api/logout') {
       message = 'Você saiu do sistema.'
     } else if (['post', 'put', 'patch', 'delete'].includes(method)) {
       message = 'Operação realizada com sucesso!'
@@ -84,6 +109,7 @@ export const authUser = ref(null)
 export const tenantUser = ref(null);
 
 export function initApi() {
+  migrateLegacyStorage()
   const base = import.meta.env.VITE_API_BASE_URL
   api.defaults.baseURL = base
   // For Sanctum cookie-based auth
@@ -92,14 +118,14 @@ export function initApi() {
   // If a token was persisted from previous session, apply it so subsequent
   // requests include Authorization automatically.
   try {
-    const token = localStorage.getItem('mindease:token')
+    const token = localStorage.getItem('sessly:token')
     if (token) api.defaults.headers.common['Authorization'] = `Bearer ${token}`
   } catch (e) {
     // ignore if storage not available
   }
   // If a tenant was persisted, set it globally so auth checks include it
   try {
-    const stored = localStorage.getItem('mindease:tenant')
+    const stored = localStorage.getItem('sessly:tenant')
     if (stored) api.defaults.headers.common['X-Tenant'] = stored
   } catch (e) {
     // ignore (localStorage may not be available in some environments)
@@ -110,7 +136,7 @@ export function initApi() {
     (resp) => resp,
     (err) => {
       if (err && err.response && err.response.status === 401) {
-        try { localStorage.removeItem('mindease:token') } catch (e) {}
+        try { localStorage.removeItem('sessly:token') } catch (e) {}
         delete api.defaults.headers.common['Authorization']
         authUser.value = false
       }
@@ -152,7 +178,7 @@ export async function login({ email, password }) {
     const token = data.token || data.access_token || data.api_token || (data.data && (data.data.token || data.data.access_token))
     if (token) {
       try {
-        localStorage.setItem('mindease:token', token)
+        localStorage.setItem('sessly:token', token)
       } catch (e) {}
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
@@ -164,30 +190,32 @@ export async function login({ email, password }) {
 }
 
 export async function logout() {
-  // Clear client token state immediately so further requests are unauthenticated
   try {
-    localStorage.removeItem('mindease:token')
-  } catch (e) {}
-  delete api.defaults.headers.common['Authorization']
+    await api.post('/api/logout')
+  } finally {
+    try {
+      localStorage.removeItem('sessly:token')
+    } catch (e) {}
+    delete api.defaults.headers.common['Authorization']
 
-  // mark unauthenticated locally so route guards will send user to /login
-  try {
-    authUser.value = false
-  } catch (e) {}
-
-  return api.post('/logout')
+    // mark unauthenticated locally so route guards will send user to /login
+    try {
+      authUser.value = false
+    } catch (e) {}
+  }
 }
 
 // fetch current authenticated user. Adjust endpoint if your backend uses different path.
 export async function currentUser() {
   // typical Laravel Sanctum uses /api/user
   try {
-    return await api.get('/api/user')
+    const response = await api.get('/api/user')
+    return response.data?.data ?? null
   } catch (e) {
     // if 401, mark unauthenticated
     if (e && e.response && e.response.status === 401) {
       try {
-        localStorage.removeItem('mindease:token')
+        localStorage.removeItem('sessly:token')
       } catch (err) {}
       delete api.defaults.headers.common['Authorization']
     }

@@ -1,6 +1,6 @@
-# Mindease Frontend (Vue) - README
+# Sessly Frontend (Vue) - README
 
-Este repositório contém o frontend em Vue 3 (Vite) para a aplicação Mindease. O frontend foi organizado para rodar em container via Docker Compose e está preparado para integração com um backend Laravel (Sanctum cookie-based) através de axios (withCredentials).
+Este repositório contém o frontend em Vue 3 (Vite) para a aplicação Sessly. O frontend foi organizado para rodar em container via Docker Compose e está preparado para integração com um backend Laravel (Sanctum cookie-based) através de axios (withCredentials).
 
 Sumário rápido
 - Como rodar em desenvolvimento

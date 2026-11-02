@@ -20,6 +20,9 @@ import LoginPage from './pages/LoginPage.vue'
 import { initApi, api } from './composables/useApi'
 import { authUser, tenantUser, currentUser } from './composables/useApi'
 import CompanyPage from "./pages/CompanyPage.vue";
+import CompanyAdminPage from './pages/admin/CompanyAdminPage.vue'
+import CompanyNewPage from './pages/admin/CompanyNewPage.vue'
+import CompanyEditPage from './pages/admin/CompanyEditPage.vue'
 import PatientEditPage from "./pages/patients/PatientEditPage.vue";
 import ContractNewPage from "./pages/contracts/ContractNewPage.vue";
 import ContractEditPageDeprecated from "./pages/contracts/ContractEditPage-DEPRECATED.vue";
@@ -30,6 +33,9 @@ const routes = [
   { path: '/', redirect: '/dashboard' },
   { path: '/login', component: LoginPage },
   { path: '/companies', component: CompanyPage },
+  { path: '/admin/companies', component: CompanyAdminPage, meta: { rootOnly: true } },
+  { path: '/admin/companies/new', component: CompanyNewPage, meta: { rootOnly: true } },
+  { path: '/admin/companies/:uuid/edit', component: CompanyEditPage, meta: { rootOnly: true } },
   { path: '/contracts', component: ContractIndex },
   { path: '/contracts/new', component: ContractNewPage },
   { path: '/contracts/:id/edit', component: ContractEditPageDeprecated },
@@ -49,34 +55,49 @@ const routes = [
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-// Global auth guard: ensures routes (except /login) require authentication
+// Global auth guard: ensures routes require authentication and restrict admin routes to root
 router.beforeEach(async (to, from, next) => {
-    try {
-      authUser.value = (await currentUser()).data;
-      tenantUser.value =  await localStorage.getItem('mindease:tenant')
+  try {
+    authUser.value = await currentUser()
+    tenantUser.value = localStorage.getItem('sessly:tenant')
+  } catch (e) {
+    authUser.value = false
+    tenantUser.value = false
+    localStorage.removeItem('sessly:tenant')
+  }
 
-      if (!tenantUser.value || !authUser.value) {
-        if (to.path === '/login' || to.path === '/companies') {
-          return next()
-        }
+  const isAuthenticated = !!authUser.value
+  const isRoot = isAuthenticated && Number(authUser.value.id) === 1
+  const isLogin = to.path === '/login'
+  const isCompanySelection = to.path === '/companies'
 
-        throw new Error('User not authenticated or tenant not set');
-      } else {
-          if (to.path === '/login' || to.path === '/companies') {
-            return next({ path: '/'})
-          }
-      }
-    } catch (e) {
-      authUser.value = false
-      tenantUser.value = false;
-      localStorage.removeItem('mindease:tenant')
+  if (!isAuthenticated) {
+    if (isLogin || isCompanySelection) return next()
 
-      if (to.path === '/login' || to.path === '/companies') {
-        return next()
-      } else {
-        return next({ path: '/login', query: { redirect: to.fullPath } })
-      }
-    }
+    return next({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  if (isLogin) {
+    return next({ path: isRoot ? '/admin/companies' : '/' })
+  }
+
+  if (to.meta.rootOnly && !isRoot) {
+    return next({ path: tenantUser.value ? '/' : '/companies' })
+  }
+
+  if (to.meta.rootOnly) {
+    return next()
+  }
+
+  if (!tenantUser.value) {
+    if (isCompanySelection) return next()
+
+    return next({ path: '/companies' })
+  }
+
+  if (isCompanySelection) {
+    return next({ path: '/' })
+  }
 
   return next()
 })
