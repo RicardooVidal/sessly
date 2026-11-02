@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* pnpm-lock.yaml* ./
+# Install dependencies during image build. Use npm install to ensure packages are available
+RUN npm install --silent
+
+# Copy rest of files
+COPY . .
+RUN npm run build --silent || true
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
