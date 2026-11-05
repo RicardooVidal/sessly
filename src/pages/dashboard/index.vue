@@ -156,6 +156,7 @@ const presenceLabels = {
   absent: 'Faltou',
   pending: 'Pendente',
   present: 'Realizado',
+  present_to_receive: 'Presente - A receber',
 }
 
 const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)

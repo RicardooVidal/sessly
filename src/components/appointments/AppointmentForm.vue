@@ -244,6 +244,7 @@ export default {
       { value: '', label: 'Selecione' },
       { value: 'pending', label: 'Pendente' },
       { value: 'present', label: 'Presente' },
+      { value: 'present_to_receive', label: 'Presente - A receber' },
       { value: 'absent', label: 'Ausente' },
     ]
 

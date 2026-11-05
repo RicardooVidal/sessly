@@ -106,6 +106,8 @@ export function presence(value) {
     switch (value) {
         case 'present':
             return 'Presente';
+        case 'present_to_receive':
+            return 'Presente - A receber';
         case 'pending':
             return 'Pendente';
         case 'absent':

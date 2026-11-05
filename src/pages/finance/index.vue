@@ -56,11 +56,19 @@
         </article>
 
         <article class="summary-card summary-card--primary">
-          <span class="summary-card__label">Valor a receber</span>
+          <span class="summary-card__label">Valores Pagos</span>
+          <strong class="summary-card__value">
+            {{ formatCurrency(summary.paid_amount) }}
+          </strong>
+          <span class="summary-card__hint">Presenças pagas no período</span>
+        </article>
+
+        <article class="summary-card summary-card--primary">
+          <span class="summary-card__label">Valores a Receber</span>
           <strong class="summary-card__value">
             {{ formatCurrency(summary.receivable_amount) }}
           </strong>
-          <span class="summary-card__hint">Atendimentos realizados no período</span>
+          <span class="summary-card__hint">Presentes aguardando pagamento</span>
         </article>
       </div>
 
