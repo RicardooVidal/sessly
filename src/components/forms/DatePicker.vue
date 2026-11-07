@@ -39,7 +39,7 @@ export default {
     width: { type: [String, Number], default: null },
     id: { type: String, default: '' },
     label: { type: String, default: '' },
-    modelValue: { type: [String, Date], default: '' },
+    modelValue: { type: [String, Date, Array], default: '' },
     modelType: { type: String, default: "yyyy-MM-dd'T'HH:mm" },
     format: { type: String, default: 'dd/MM/yyyy HH:mm' },
     placeholder: { type: String, default: 'Selecione a data e o horário' },

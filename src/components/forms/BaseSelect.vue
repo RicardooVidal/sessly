@@ -4,7 +4,7 @@
     :style="{ '--form-field-width': typeof width === 'number' ? `${width}px` : width }"
   >
     <span class="label-text">{{ label }} <small v-if="required">*</small></span>
-    <select :value="modelValue" @change="$emit('update:modelValue', $event.target.value)" class="base-input" :class="{ 'has-error': error }">
+    <select :value="modelValue" @change="$emit('update:modelValue', $event.target.value)" class="base-input" :class="{ 'has-error': error }" :disabled="disabled">
       <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
     </select>
     <small v-if="error" class="error">{{ error }}</small>
@@ -23,6 +23,7 @@ export default {
     required: { type: Boolean, default: false },
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
+    disabled: { type: Boolean, default: false },
   },
 }
 </script>

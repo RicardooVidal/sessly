@@ -8,6 +8,7 @@ import PatientIndex from './pages/patients/index.vue'
 import ContractIndex from './pages/contracts/index.vue'
 import DashboardIndex from './pages/dashboard/index.vue'
 import FinanceIndex from './pages/finance/index.vue'
+import FinanceReportsPage from './pages/finance/ReportsPage.vue'
 import AppointmentIndex from './pages/appointments/index.vue'
 import AppointmentNewPage from "./pages/appointments/AppointmentNewPage.vue";
 import AppointmentEditPage from "./pages/appointments/AppointmentEditPage.vue";
@@ -41,6 +42,7 @@ const routes = [
   { path: '/contracts/:id/edit', component: ContractEditPageDeprecated },
   { path: '/dashboard', component: DashboardIndex },
   { path: '/finance', component: FinanceIndex },
+  { path: '/finance/reports', component: FinanceReportsPage },
   { path: '/patients', component: PatientIndex },
   { path: '/patients/new', component: PatientNewPage },
   { path: '/wait-list', component: WaitListPage },

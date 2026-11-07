@@ -207,17 +207,19 @@ a { color: var(--primary); }
 ::selection { background: var(--surface-hover); color: var(--text); }
 
 /* Vendor widgets declare their own defaults; map them to the active palette. */
-:root .dp__theme_light, :root .dp__theme_dark {
+:root .dp--theme-light, :root .dp--theme-dark {
   --dp-background-color: var(--surface);
   --dp-text-color: var(--text);
   --dp-hover-color: var(--surface-hover);
   --dp-hover-text-color: var(--text);
+  --dp-hover-icon-color: var(--text);
   --dp-primary-color: var(--primary);
   --dp-primary-text-color: var(--on-primary);
   --dp-secondary-color: var(--muted);
   --dp-border-color: var(--border);
   --dp-menu-border-color: var(--border);
   --dp-border-color-hover: var(--primary);
+  --dp-border-color-focus: var(--primary);
   --dp-icon-color: var(--muted);
   --dp-disabled-color: var(--surface-muted);
   --dp-disabled-color-text: var(--muted);

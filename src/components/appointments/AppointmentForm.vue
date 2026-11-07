@@ -33,7 +33,7 @@
         label="Valor"
         v-model="form.value"
         placeholder="Valor"
-        required
+        hint="Deixe vazio ou informe 0 para sessões sem cobrança."
         :error="form.errors.value"
         :mask="maskMoney"
         @blur="form.validate('value')"
