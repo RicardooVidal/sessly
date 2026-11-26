@@ -1,5 +1,6 @@
 <template>
-  <div :class="['layout', themeClass]">
+  <router-view v-if="$route.path === '/telescope'" />
+  <div v-else :class="['layout', themeClass]">
     <div class="mobile-topbar" v-if="isMobile">
       <button @click="toggleSidebar">☰</button>
       <span class="brand-div">

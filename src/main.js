@@ -18,6 +18,7 @@ import PatientDetailPage from './pages/patients/PatientDetailPage.vue'
 import AlfacePage from './pages/AlfacePage.vue'
 import TablesPage from './pages/TablesPage.vue'
 import LoginPage from './pages/LoginPage.vue'
+import TelescopePage from './pages/TelescopePage.vue'
 import { initApi, api } from './composables/useApi'
 import { authUser, tenantUser, currentUser } from './composables/useApi'
 import CompanyPage from "./pages/CompanyPage.vue";
@@ -33,6 +34,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 const routes = [
   { path: '/', redirect: '/dashboard' },
   { path: '/login', component: LoginPage },
+  { path: '/telescope', component: TelescopePage },
   { path: '/companies', component: CompanyPage },
   { path: '/admin/companies', component: CompanyAdminPage, meta: { rootOnly: true } },
   { path: '/admin/companies/new', component: CompanyNewPage, meta: { rootOnly: true } },
@@ -59,6 +61,9 @@ const router = createRouter({ history: createWebHistory(), routes })
 
 // Global auth guard: ensures routes require authentication and restrict admin routes to root
 router.beforeEach(async (to, from, next) => {
+  if (to.path === '/telescope') return next()
+  if (to.path === '/login' && from.path === '/telescope') return next()
+
   try {
     authUser.value = await currentUser()
     tenantUser.value = localStorage.getItem('sessly:tenant')
